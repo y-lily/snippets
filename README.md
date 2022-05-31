@@ -1,4 +1,3 @@
-# snippets
 A collection of useful algorithms and routines written in different languages.
 
 ## C++
