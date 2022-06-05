@@ -1,0 +1,17 @@
+{
+  "Write file": {
+    "prefix": [
+      "write-file"
+    ],
+    "body": [
+      "${2:template <typename T>}",
+      "void write_file(const std::string& file, const std::vector<${3:T}>& src, const std::string& delim = \"${4:\\n}\") {",
+      "\tstd::ofstream out { file };",
+      "\tif (!out) { throw std::runtime_error(\"Can't open \" + file); }",
+      "",
+      "\tfor (${3:T} t : src) { out << t << delim; }",
+      "}$1"
+    ],
+    "description": "Writes into the file from a vector. Throws runtime_error."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "Read file": {
+    "prefix": [
+      "read-file"
+    ],
+    "body": [
+      "${2:template <typename T>}",
+      "void read_file(const std::string& file, std::vector<${3:T}>& dest) {",
+      "\tstd::ifstream in { file };",
+      "\tif (!in) { throw std::runtime_error(\"Can't open \" + file); }",
+      "",
+      "\tfor (${3:T} t; in >> t; ) { dest.emplace_back(t); }",
+      "}$1"
+    ],
+    "description": "Reads a file into the vector. Throws runtime_error."
+  }
+}
