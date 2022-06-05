@@ -1,0 +1,20 @@
+{
+  "Use line": {
+    "prefix": [
+      "use-line"
+    ],
+    "body": [
+      "void use(const std::string& file) {",
+      "\tstd::ifstream in { file };",
+      "\tif (!in) { throw std::runtime_error(\"Can't open \" + file); }",
+      "",
+      "\tint ${2:lineNum} = 0;",
+      "\tfor (std::string line; std::getline(in, line); ) {",
+      "\t\t++${2:lineNum};",
+      "\t\t${1:// Make use of the line}",
+      "\t}",
+      "}$3"
+    ],
+    "description": "A loop to do something with every line in a file. Throws runtime_error."
+  }
+}
