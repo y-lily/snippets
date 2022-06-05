@@ -1,11 +1,10 @@
-void use(const string& file) {
-  std::ifstream input { file };
-  if (!input) { throw std::runtime_error("Can't open " + file + "\n"); }
+void use(const std::string& file) {
+  std::ifstream in { file };
+  if (!in) { throw std::runtime_error("Can't open " + file); }
 
   int lineNum = 0;
-  for (std::string line; getline(input, line);) {
+  for (std::string line; std::getline(in, line); ) {
     ++lineNum;
-    // make use of the line
-    // ...
+    // Make use of the line
   }
 }
