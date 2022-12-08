@@ -45,7 +45,7 @@ print(box.color)      # brown
 box.put("a pen")      # a pen has been put in the box
 ```
 
-You can create and add on top of each other any possible number and combination of decorators.
+You can create and stack on top of each other any possible number and combination of decorators.
 
 ```Python
 class BoxWithCapacity(Decorator[Box]):
@@ -116,7 +116,7 @@ class BoxWithCapacity(Decorator[Box], HasCapacity):
     ...
 ```
 
-Now, when you put a certain combination of decorators on a Box object, you can typehint it using their protocols.
+Now, when you add a certain combination of decorators on a Box object, you can typehint it using their protocols.
 
 ```Python
 
