@@ -4,7 +4,7 @@ A collection of useful algorithms and routines written in different languages.
 [File Input/Output](https://github.com/y-lily/snippets/tree/master/cpp/file-io)
 
 ### Python
-*Coming soon...*
+[Decorator](https://github.com/y-lily/snippets/blob/main/python/decorator.py) ([How-to](https://github.com/y-lily/snippets/blob/main/python/decorator-usage.md))
 
 ### Java
 *Coming soon...*
