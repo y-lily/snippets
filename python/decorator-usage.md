@@ -45,7 +45,7 @@ print(box.color)      # brown
 box.put("a pen")      # a pen has been put in the box
 ```
 
-You can create and stack on top of each other any possible number and combination of decorators.
+You can create and stack on top of each other any possible number of decorators.
 
 ```Python
 class BoxWithCapacity(Decorator[Box]):
@@ -78,7 +78,7 @@ box.put("a jacket")   # Failed to put a jacket in the box, the box is full.
 
 ```
 
-### How to get some of the editor's support back.
+### How to get some of the editor's support back
 
 A notable drawback of using class decorators is the loss of the editor's support, namely: 
 
@@ -126,4 +126,4 @@ class BoxWithColorAndCapacity(HasCapacity, HasColor, HasMaterial, SupportsPut, P
 box: BoxWithColorAndCapacity = BoxWithCapacity(BoxWithColor(Box("wood"), "brown"), 2)
 ```
 
-This gives you back suggestions on code completition, type checking, and, partially, renaming attributes across the projects (if you've overriden existing methods within your decorators, like `put()` for `BoxWithCapacity` in this example, you'll have to rename them manually).
+This gives you back suggestions on code completition, type checking, and, partially, renaming attributes across the projects (if you've overriden an existing base class method within your decorators, like we've done with the method `put()` for `BoxWithCapacity` in the example, then you'll have to manually rename such methods within these decorators).
