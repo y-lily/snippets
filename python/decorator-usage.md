@@ -80,10 +80,10 @@ box.put("a jacket")   # Failed to put a jacket in the box, the box is full.
 
 ### How to get some of the editor and type checker support back
 
-A notable drawback of using class decorators is the loss of support from the editor and the type checker, namely: 
+A notable drawback of using class decorators is the loss of support from the code editor / environment, namely: 
 
   * Suggestions on automatic code completion.
-  * Type checking.
+  * Static type checking.
   * Renaming all attribute occurences across the entire project.
 
 There are workarounds, although they do not look very clean and have some limitations.
