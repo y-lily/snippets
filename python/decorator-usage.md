@@ -59,7 +59,7 @@ class BoxWithCapacity(Decorator[Box]):
         return self._capacity
 
     @override
-    def put(self: Box | BoxWithCapacity, item: object) -> None:   # Typehint self to get the editor support.
+    def put(self, item: object) -> None:
         if len(self._items) >= self.capacity:
             print(f"Failed to put {item} in the box, the box is full.")
             return
@@ -78,52 +78,79 @@ box.put("a jacket")   # Failed to put a jacket in the box, the box is full.
 
 ```
 
-### How to get some of the editor's support back
+### How to get some of the editor and type checker support back
 
-A notable drawback of using class decorators is the loss of the editor's support, namely: 
+A notable drawback of using class decorators is the loss of support from the editor and the type checker, namely: 
 
   * Suggestions on automatic code completion.
   * Type checking.
   * Renaming all attribute occurences across the entire project.
 
-As a possible workaround, protocols can be used.
+There are workarounds, although they do not look very clean and have some limitations.
 
-Consider making your base class and all its decorators to implement some protocols:
+*If you simply want to annotate a decorated object*, a possible solution would be **to create a new annotation class (1)** which inherits the decorators and the base object.
 
 ```Python
-class HasMaterial(Protocol):
-    @property
-    def material(self) -> str: ...
-class SupportsPut(Protocol):
+@final  # Make it clear that this class is not meant to be used in other context.
+class BoxWithColorAndCapacity(BoxWithColor, BoxWithCapacity, Box): pass
+
+box: BoxWithColorAndCapacity = BoxWithColor(BoxWithCapacity(Box("wood"), 20), "red")
+```
+
+*If you want to annotate within a decorator's body that it has all attributes of the decorated object*, you can **annotate self (2)**.
+
+```Python
+class BoxWithCapacity(Decorator[Box]):
+
+    @override
+    def put(self: Box | BoxWithCapacity, item: object) -> None: 
+        if len(self._items) >= self.capacity:   # Here, _items will be properly recognized as a Box' attribute. 
+            print(f"Failed to put {item} in the box, the box is full.")
+            return
+            
+        self._decorated.put(item)
+```
+The third method probably deserves the biggest attention. 
+
+There might be a common case when you want to *use your decorator with interfaces*. 
+
+Let's say, your Box is now an interface and its previous body is now one of its ConcreteBox implementation.
+
+```Python
+class Box(Protocol):
+    @abstractmethod
     def put(self, item: object) -> None: ...
-    
-class Box(HasMaterial, SupportsPut):
-    ...   # Same implementation as in the first part.
 
+class ConcreteBox(Box):
 
-class HasColor(Protocol):
-    @property
-    def color(self) -> str: ...
-    
-class BoxWithColor(Decorator[Box], HasColor):
-    ...
-    
-class HasCapacity(Protocol):
-    @property
-    def capacity(self) -> int: ...
-    
-class BoxWithCapacity(Decorator[Box], HasCapacity):
-    ...
+    def __init__(self, _material: str) -> None:
+        # View the previous Box' body.
 ```
 
-Now, when you add a certain combination of decorators on a Box object, you can typehint it using their protocols.
+If you  decide to annotate a decorator as implementing the Box class, you'll get some nasty results:
 
 ```Python
+class BoxWithColor(Decorator[Box], Box):    # Don't!
 
-class BoxWithColorAndCapacity(HasCapacity, HasColor, HasMaterial, SupportsPut, Protocol):   # Note that it's a protocol, not an implementation.
-    pass
-    
-box: BoxWithColorAndCapacity = BoxWithCapacity(BoxWithColor(Box("wood"), "brown"), 2)
+    def __init__(self, _box: Box, _color: str) -> None:
+        ...
+
+box = BoxWithColor(ConcreteBox("wood"), "red")  # TypeError: Can't instantiate abstract class BoxWithColor with abstract methods material, put
 ```
 
-This gives you back suggestions on code completition, type checking, and, partially, renaming attributes across the projects (if you've overriden an existing base class method within your decorators, like we've done with the method `put()` for `BoxWithCapacity` in the example, then you'll have to manually rename such methods within these decorators).
+This is because "to implement a protocol in Python" in fact means to inherit the class, so your decorator will try to use abstract attributes of its "parent" rather than getting them from the decorated object.
+
+What you might do, is **to provide fake inheritance for the type checker only which will not be used during run-time (3)**.
+
+```Python
+if TYPE_CHECKING:
+    class BoxWithColorAnnotation(Box): pass
+else:
+    class BoxWithColorAnnotation: pass
+
+class BoxWithColor(Decorator[Box], BoxWithColorAnnotation): ...
+
+box = BoxWithColor(ConcreteBox("wood"), "red")  # Works fine during run-time and is recognized by the type checker.
+```
+
+Combining the methods **(1)** and **(3)** is probably the most efficient way to get maximum from your editor and type checker without preventing your code from working properly.
